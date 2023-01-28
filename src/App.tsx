@@ -22,7 +22,6 @@ import { convertAmountToRawNumber, convertStringToHex } from "./helpers/bignumbe
 import { IAssetData } from "./helpers/types";
 import Banner from "./components/Banner";
 import AccountAssets from "./components/AccountAssets";
-import { eip712 } from "./helpers/eip712";
 
 const SLayout = styled.div`
   position: relative;
@@ -558,6 +557,7 @@ class App extends React.Component<any, any> {
 
       // verify signature
       const hash = hashMessage(message);
+
       const valid = await verifySignature(address, result, hash, chainId);
 
       // format displayed result
@@ -587,7 +587,51 @@ class App extends React.Component<any, any> {
       return;
     }
 
-    const message = JSON.stringify(eip712.example);
+  // const message = JSON.stringify(eip712.example);
+
+  const eip712Domain = { name: 'zkSync', version: '2', chainId: 280 };
+  const eip712Types = {
+    EIP712Domain: [
+        { name: "name", type: "string" },
+        { name: "version", type: "string" },
+        { name: "chainId", type: "uint256" },
+      ],
+    Transaction: [
+      { name: 'txType', type: 'uint256' },
+      { name: 'from', type: 'uint256' },
+      { name: 'to', type: 'uint256' },
+      { name: 'ergsLimit', type: 'uint256' },
+      { name: 'ergsPerPubdataByteLimit', type: 'uint256' },
+      { name: 'maxFeePerErg', type: 'uint256' },
+      { name: 'maxPriorityFeePerErg', type: 'uint256' },
+      { name: 'paymaster', type: 'uint256' },
+      { name: 'nonce', type: 'uint256' },
+      { name: 'value', type: 'uint256' },
+      { name: 'data', type: 'bytes' },
+      { name: 'factoryDeps', type: 'bytes32[]' },
+      { name: 'paymasterInput', type: 'bytes' }
+    ]
+  }
+  const signInput  = {
+    txType: 2,
+    from: '0x62c21EDc94f2ac82072e0b17e7890320F8E68bB2',
+    to: '0x1426BB23Ad8F7029618Cab37E39202a4B434508a',
+    ergsLimit: "0x643082",
+    ergsPerPubdataByteLimit: 160000,
+    maxFeePerErg: "0x6553f100",
+    maxPriorityFeePerErg: "0x59682f00",
+    paymaster: '0xBcC8D0FE2549a0078d8295a4e4B08b2B0a126963',
+    nonce: 17,
+    value: '0x00',
+    data: '0xa9059cbb0000000000000000000000002d4bbcc282ea9167d1d24df9b92227f7b2c060a800000000000000000000000000000000000000000000000000000000000000c8',
+    factoryDeps: [],
+    paymasterInput: '0x8c5a344500000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000'
+  }
+
+
+  const m = {types:eip712Types, domain:eip712Domain, primaryType:"Transaction", message:signInput};
+
+  const message = JSON.stringify(m);
 
     // eth_signTypedData params
     const msgParams = [address, message];
@@ -637,6 +681,7 @@ class App extends React.Component<any, any> {
       pendingRequest,
       result,
     } = this.state;
+
     return (
       <SLayout>
         <Column maxWidth={1000} spanHeight>

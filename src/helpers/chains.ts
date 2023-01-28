@@ -1,6 +1,22 @@
 import { IChainData } from "../helpers/types";
 
 export const SUPPORTED_CHAINS: IChainData[] = [
+   {
+    name: "zksyncalpha",
+    short_name: "zksync",
+    chain: "ZKSYNC",
+    network: "zksyncalpha",
+    chain_id: 280,
+    network_id: 280,
+    rpc_url: "https://zksync2-testnet.zksync.dev",
+    native_currency: {
+      symbol: "ETH",
+      name: "Ether",
+      decimals: "18",
+      contractAddress: "",
+      balance: "",
+    },
+  },
   {
     name: "Ethereum Mainnet",
     short_name: "eth",
